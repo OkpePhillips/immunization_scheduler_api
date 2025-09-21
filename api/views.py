@@ -120,6 +120,18 @@ def list_users(request):
     serializer = UserSerializer(users, many=True)
     return Response(serializer.data)
 
+@swagger_auto_schema(
+    method="get",
+    operation_summary="Get Authenticated user's details",
+    manual_parameters=[auth_param],
+    responses={200: UserSerializer},
+)
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def users_me(request):
+    serializer = UserSerializer(request.user)
+    return Response(serializer.data)
+
 
 # -------------------------------
 # Child Registration & Vaccination Scheduling

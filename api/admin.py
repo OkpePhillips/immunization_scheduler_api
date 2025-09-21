@@ -12,8 +12,8 @@ from .models import (
 
 @admin.register(Facility)
 class FacilityAdmin(admin.ModelAdmin):
-    list_display = ("id", "name", "location", "contact")
-    search_fields = ("name", "location")
+    list_display = ("id", "name", "ward", "lga", "state")
+    search_fields = ("name", "state")
 
 
 @admin.register(FacilityVaccinationDay)

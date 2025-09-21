@@ -1,11 +1,35 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.utils.timezone import now
 
 from api.utils import adjust_to_facility_day
 
 
 # Custom User with roles
+class UserManager(BaseUserManager):
+    def create_user(self, username, email=None, password=None, **extra_fields):
+        if not username:
+            raise ValueError("The Username must be set")
+        email = self.normalize_email(email)
+        user = self.model(username=username, email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, username, email=None, password=None, **extra_fields):
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
+        extra_fields.setdefault("role", "admin")  # ✅ force role = admin
+
+        if extra_fields.get("is_staff") is not True:
+            raise ValueError("Superuser must have is_staff=True.")
+        if extra_fields.get("is_superuser") is not True:
+            raise ValueError("Superuser must have is_superuser=True.")
+        if extra_fields.get("role") != "admin":
+            raise ValueError("Superuser must have role='admin'.")
+
+        return self.create_user(username, email, password, **extra_fields)
+
 class User(AbstractUser):
     ROLES = (
         ("admin", "Ministry Admin"),
@@ -15,6 +39,8 @@ class User(AbstractUser):
     facility = models.ForeignKey(
         "Facility", on_delete=models.SET_NULL, null=True, blank=True
     )
+
+    objects = UserManager()
 
 
 class Facility(models.Model):

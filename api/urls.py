@@ -7,6 +7,7 @@ urlpatterns = [
     path("facilities/add/", views.add_facility),
     # Users
     path("users/", views.list_users),
+    path("users/me/", views.users_me),
     path("users/add/", views.add_user),
     # Children & Vaccinations
     path("children/register/", views.register_child),
